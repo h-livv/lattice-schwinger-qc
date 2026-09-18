@@ -1,0 +1,1 @@
+[Haobin Chen, Lin Cheng, Xingyu Guo, Digital Quantum Simulation of Nonequilibrium Dynamics in the Schwinger Model under a Strong External Electric Field (2026)](https://arxiv.org/abs/2607.02894)
