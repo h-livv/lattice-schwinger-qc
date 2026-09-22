@@ -23,5 +23,3 @@ Figures:
 - VQE ground states, VQD excited states, and second-order Trotter evolution, checked against this baseline.
 - A time-dependent external field.
 - Larger lattices, with a tensor-network baseline, then ansatz benchmarks and hardware runs.
-
----
