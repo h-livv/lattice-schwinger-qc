@@ -5,12 +5,20 @@ built directly in the qubit/Pauli representation of Eqs. (8)-(11):
     H = H_kin + H_m + H_E
 
     H_kin = (1/4a) * sum_{n=1}^{N-1} (X_n X_{n+1} + Y_n Y_{n+1})
-    H_m   = (m/2)  * sum_{n=1}^{N}   (-1)^n Z_n
-    H_E   = (g^2 a/2) * sum_{n=1}^{N-1} [ eps + (1/2) sum_{l=1}^{n} (Z_l + (-1)^l) ]^2
+    H_m   = (m/2)  * sum_{n=1}^{N}   (-1)^{n+1} Z_n
+    H_E   = (g^2 a/2) * sum_{n=1}^{N-1} [ eps + (1/2) sum_{l=1}^{n} (Z_l + (-1)^{l+1}) ]^2
 
 Site indices n = 1..N in the paper <-> python indices idx = 0..N-1 (idx = n-1).
 No Jordan-Wigner transformation needs to be done by hand -- the paper already
 expresses H purely in terms of single- and two-qubit Pauli operators.
+
+The paper's Eqs. (10)-(13) and (17) write the stagger as (-1)^n. With that
+sign, a quench from the zero-field vacuum does not separate charge (Fig. 4
+stays flat) and E_0(ε) misses Fig. 1. The sign (-1)^{n+1} is the stagger of a
+zero-based site index, applied in the mass, the Gauss law, and every charge
+observable. At ε = 0 it is equivalent to Z_n -> -Z_n, so the Table I energy
+is unchanged. At ε > 0 it is the relative sign between the boundary field and
+the staggered charge that reproduces the ED curves in Figs. 1, 4, 5, and 8.
 """
 
 import numpy as np
@@ -21,6 +29,11 @@ I2 = sparse.identity(2, format="csr", dtype=complex)
 SX = sparse.csr_matrix([[0, 1], [1, 0]], dtype=complex)
 SY = sparse.csr_matrix([[0, -1j], [1j, 0]], dtype=complex)
 SZ = sparse.csr_matrix([[1, 0], [0, -1]], dtype=complex)
+
+
+def stagger(n):
+    """(-1)^{n+1} for 1-based site n. See the module docstring."""
+    return (-1) ** (n + 1)
 
 
 def op_on_site(op, n, N):
@@ -57,14 +70,14 @@ def build_hamiltonian(N, a=1.0, m=1.0, g=1.0, eps=0.0):
     # --- H_m: staggered mass term, n = 1..N -> idx = 0..N-1 ---
     for idx in range(N):
         n = idx + 1
-        H = H + (m / 2.0) * ((-1) ** n) * Zs[idx]
+        H = H + (m / 2.0) * stagger(n) * Zs[idx]
 
     # --- H_E: electric-field energy, n = 1..N-1 -> idx = 0..N-2 ---
-    # L_n = eps + (1/2) * cumulative_{l=1}^{n} (Z_l + (-1)^l)
+    # L_n = eps + (1/2) * cumulative_{l=1}^{n} (Z_l + (-1)^{l+1})
     cum = sparse.csr_matrix((dim, dim), dtype=complex)
     for n in range(1, N):
         idx = n - 1  # this iteration adds the l = n term to the running sum
-        cum = cum + 0.5 * (Zs[idx] + ((-1) ** n) * identity_full)
+        cum = cum + 0.5 * (Zs[idx] + stagger(n) * identity_full)
         Ln = eps * identity_full + cum
         H = H + (g ** 2 * a / 2.0) * (Ln @ Ln)
 
@@ -91,30 +104,30 @@ def diagonalize(H, k=None):
 
 
 def chiral_condensate(psi, N, a=1.0):
-    """Gamma = (1/(2N a)) sum_n (-1)^n <Z_n>, Eq. (17)."""
+    """Gamma = (1/(2N a)) sum_n (-1)^{n+1} <Z_n>, Eq. (17) with the stagger of stagger()."""
     val = 0.0
     for idx in range(N):
         n = idx + 1
         Zn = op_on_site(SZ, idx, N)
         expval = np.real(psi.conj() @ (Zn @ psi))
-        val += ((-1) ** n) * expval
+        val += stagger(n) * expval
     return val / (2 * N * a)
 
 
 def total_charge(psi, N):
-    """Q_N = (1/2) sum_n (Z_n + (-1)^n), Eq. (12)."""
+    """Q_N = (1/2) sum_n (Z_n + (-1)^{n+1}), Eq. (12) with the stagger of stagger()."""
     val = 0.0
     for idx in range(N):
         n = idx + 1
         Zn = op_on_site(SZ, idx, N)
         expval = np.real(psi.conj() @ (Zn @ psi))
-        val += expval + ((-1) ** n)
+        val += expval + stagger(n)
     return val / 2
 
 
 def local_charge(psi, N):
     """
-    q_n(t) = (1/2)(<Z_n> + (-1)^n), Eq. (13) -- the staggered-site charge
+    q_n(t) = (1/2)(<Z_n> + (-1)^{n+1}), Eq. (13) with the stagger of stagger() -- the staggered-site charge
     density, site by site. Returns array of length N (index idx = n-1).
     """
     q = np.zeros(N)
@@ -122,7 +135,7 @@ def local_charge(psi, N):
         n = idx + 1
         Zn = op_on_site(SZ, idx, N)
         expval = np.real(psi.conj() @ (Zn @ psi))
-        q[idx] = 0.5 * (expval + ((-1) ** n))
+        q[idx] = 0.5 * (expval + stagger(n))
     return q
 
 
@@ -154,7 +167,7 @@ def field_energy(psi, N, a=1.0, g=1.0, eps=0.0):
     total = 0.0
     for n in range(1, N):
         idx = n - 1
-        cum = cum + 0.5 * (Zs[idx] + ((-1) ** n) * identity_full)
+        cum = cum + 0.5 * (Zs[idx] + stagger(n) * identity_full)
         Ln = eps * identity_full + cum
         L2 = Ln @ Ln
         total += np.real(psi.conj() @ (L2 @ psi))

@@ -1,1 +1,27 @@
-This repository reproduces Chen, Cheng & Guo (arXiv:2607.02894). VQE-based ground-state preparation, VQD excited-state estimation, and second-order Trotter-Suzuki real-time evolution of the (1+1)D Schwinger model under an external electric-field quench, validated against exact diagonalization. Beyond replication, it extends the study along directions the original paper leaves open: time-dependent external fields, larger lattice sizes (with a tensor-network baseline once exact diagonalization becomes infeasible), ansatz benchmarking, and execution on real quantum hardware.
+# Lattice Schwinger model
+
+Reproduction and extension of Chen, Cheng & Guo, [arXiv:2607.02894](https://arxiv.org/abs/2607.02894): the lattice Schwinger model in 1+1 dimensions, quenched by a strong external electric field. This repository is the exact-diagonalization baseline for that work. Lattice units are $a = m = g = 1$. The quench starts from the zero-field ground state.
+
+## Done
+
+`schwinger.py` builds the Pauli Hamiltonian and the paper's observables. The stagger is $(-1)^{n+1}$, and with that sign the exact-diagonalization curves sit on the paper's.
+
+For $N = 8$, the spectrum, charge dynamics, electric-field energy, vacuum fidelity, and early-time decay rate match the paper's exact-diagonalization figures (Figs. 1 and 3–8). The zero-field ground-state energy is $-4.63805774$, in agreement with Table I. The critical field is computed for $N = 8, 10, 12, 14, 16$ and matches the Fig. 2 markers. A fit through those five sizes intercepts near $0.465$. The paper's quoted intercept, $0.469$, includes $N = 18$.
+
+Documentation:
+
+- [docs/building_hamiltonian.md](docs/building_hamiltonian.md) — the Pauli Hamiltonian, Eqs. (8)–(11): kinetic, mass, and electric-field terms, and how the $N$-qubit matrix is assembled.
+- [docs/building_observables.md](docs/building_observables.md) — total, site, and spatial charge, electric-field energy, vacuum fidelity, the chiral condensate, and the exact time evolution.
+
+Figures:
+
+`figures/paper_overlay/` places the archived $N = 8$ curves on the paper's axes. A solid line is this exact diagonalization, a dashed line is the paper's exact diagonalization, and gray dots are the paper's quantum-computing markers.
+
+## Plans
+
+- Appendix A at $N = 12$ (Figs. 9–11), and the $N = 18$ ground state so the Fig. 2 extrapolation uses the same sizes as the paper.
+- VQE ground states, VQD excited states, and second-order Trotter evolution, checked against this baseline.
+- A time-dependent external field.
+- Larger lattices, with a tensor-network baseline, then ansatz benchmarks and hardware runs.
+
+---
