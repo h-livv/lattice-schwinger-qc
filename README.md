@@ -1,8 +1,13 @@
 # Lattice Schwinger model
 
-Reproduction and extension of Chen, Cheng & Guo, [arXiv:2607.02894](https://arxiv.org/abs/2607.02894): the lattice Schwinger model in 1+1 dimensions, quenched by a strong external electric field. This repository is the exact-diagonalization baseline for that work. Lattice units are $a = m = g = 1$. The quench starts from the zero-field ground state.
+Reproducing and extending Chen, Cheng & Guo,
+[arXiv:2607.02894](https://arxiv.org/abs/2607.02894), on nonequilibrium
+dynamics in the 1+1D lattice Schwinger model.
 
-## Done
+The repository currently provides an exact-diagonalization baseline. Lattice units are $a = m = g = 1$,
+and the quench starts from the zero-field ground state.
+
+## Current Results
 
 `schwinger.py` builds the Pauli Hamiltonian and the paper's observables. The stagger is $(-1)^{n+1}$, and with that sign the exact-diagonalization curves sit on the paper's.
 
@@ -17,9 +22,14 @@ Figures:
 
 `figures/paper_overlay/` places the archived $N = 8$ curves on the paper's axes. A solid line is this exact diagonalization, a dashed line is the paper's exact diagonalization, and gray dots are the paper's quantum-computing markers.
 
-## Plans
+## Next Steps
 
 - Appendix A at $N = 12$ (Figs. 9–11), and the $N = 18$ ground state so the Fig. 2 extrapolation uses the same sizes as the paper.
 - VQE ground states, VQD excited states, and second-order Trotter evolution, checked against this baseline.
 - A time-dependent external field.
 - Larger lattices, with a tensor-network baseline, then ansatz benchmarks and hardware runs.
+
+## Research Status
+
+The results above are the current exact-diagonalization baseline. The items
+under Next Steps are still in progress; they are not part of the results yet.
