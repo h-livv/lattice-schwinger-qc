@@ -9,7 +9,9 @@ and the quench starts from the zero-field ground state.
 
 ## Current Results
 
-`schwinger.py` builds the Pauli Hamiltonian and the paper's observables. The stagger is $(-1)^{n+1}$, and with that sign the exact-diagonalization curves sit on the paper's.
+`src/schwinger.py` builds the Pauli Hamiltonian and the paper's observables. The stagger is $(-1)^{n+1}$, and with that sign the exact-diagonalization curves sit on the paper's.
+
+`python scripts/run.py` writes the exact-diagonalization datasets to `data/`. `python scripts/visualize.py` reads those files and writes the figures.
 
 For $N = 8$, the spectrum, charge dynamics, electric-field energy, vacuum fidelity, and early-time decay rate match the paper's exact-diagonalization figures (Figs. 1 and 3–8). The zero-field ground-state energy is $-4.63805774$, in agreement with Table I. The critical field is computed for $N = 8, 10, 12, 14, 16$ and matches the Fig. 2 markers. A fit through those five sizes intercepts near $0.465$. The paper's quoted intercept, $0.469$, includes $N = 18$.
 

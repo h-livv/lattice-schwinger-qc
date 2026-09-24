@@ -1,5 +1,8 @@
 """Load exact-diagonalization datasets from ``data/`` and write figures to ``figures/``.
 
+Run from anywhere: ``python scripts/visualize.py``. Paths are relative to the
+repository root, not the working directory.
+
 No Hamiltonian, diagonalization, or time-evolution code lives here.
 """
 
@@ -384,7 +387,7 @@ def plot_decay_rate(data_path, out_path):
 
 
 if __name__ == "__main__":
-    root = Path(__file__).resolve().parent
+    root = Path(__file__).resolve().parents[1]
     data = root / "data"
     figures = root / "figures"
     plot_condensate_spectrum(
